@@ -1,5 +1,6 @@
 package spring_boot.it211projectfinal.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +16,7 @@ public class AdminCourseController {
     private final CourseService courseService;
 
     @PostMapping
-    public CourseResponseDTO create(@RequestBody CourseRequestDTO request){
+    public CourseResponseDTO create(@Valid @RequestBody CourseRequestDTO request){
         return courseService.create(request);
     }
 

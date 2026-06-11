@@ -1,5 +1,6 @@
 package spring_boot.it211projectfinal.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +17,7 @@ public class AdminUserController {
     private final UserService userService;
 
     @PostMapping
-    public UserResponseDTO create(@RequestBody UserRequestDTO request){
+    public UserResponseDTO create(@Valid @RequestBody UserRequestDTO request){
         return userService.create(request);
     }
 

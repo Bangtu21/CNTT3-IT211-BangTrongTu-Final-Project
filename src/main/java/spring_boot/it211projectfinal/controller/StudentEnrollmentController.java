@@ -1,23 +1,31 @@
 package spring_boot.it211projectfinal.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import spring_boot.it211projectfinal.model.dto.request.EnrollmentRequestDTO;
+import spring_boot.it211projectfinal.model.dto.response.ApiResponseDTO;
 import spring_boot.it211projectfinal.service.EnrollmentService;
 
 @RestController
-@RequestMapping("/api/v1/student")
+@RequestMapping("/api/v1/student/enrollments")
 @RequiredArgsConstructor
 public class StudentEnrollmentController {
 
     private final EnrollmentService enrollmentService;
 
-    @PostMapping("/courses/{courseId}/register")
-    public String registerCourse(@PathVariable Long courseId){
-        Long studentId = 1L;
-        enrollmentService.registerCourse(studentId, courseId);
-        return "Registered successfully";
+    @PostMapping
+    public ResponseEntity<ApiResponseDTO<Void>>
+    registerCourse(
+            @RequestBody EnrollmentRequestDTO request){
+
+        enrollmentService.registerCourse(request);
+
+        return ResponseEntity.ok(
+                ApiResponseDTO.<Void>builder()
+                        .success(true)
+                        .message("Registered successfully")
+                        .build()
+        );
     }
 }
