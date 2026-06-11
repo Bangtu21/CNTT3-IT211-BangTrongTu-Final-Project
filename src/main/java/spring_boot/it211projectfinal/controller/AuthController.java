@@ -9,9 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import spring_boot.it211projectfinal.model.dto.request.LoginRequestDTO;
-import spring_boot.it211projectfinal.model.dto.request.RefreshTokenRequestDTO;
-import spring_boot.it211projectfinal.model.dto.request.RegisterRequestDTO;
+import spring_boot.it211projectfinal.model.dto.request.*;
 import spring_boot.it211projectfinal.model.dto.response.ApiResponseDTO;
 import spring_boot.it211projectfinal.model.dto.response.AuthResponseDTO;
 import spring_boot.it211projectfinal.model.dto.response.UserResponseDTO;
@@ -98,6 +96,66 @@ public class AuthController {
                         .success(true)
                         .message(
                                 "Logout successfully")
+                        .build()
+        );
+    }
+
+    @PostMapping("/change-password")
+    public ResponseEntity<ApiResponseDTO<Void>>
+    changePassword(
+            @RequestBody
+            ChangePasswordRequestDTO request){
+
+        authService.changePassword(
+                request);
+
+        return ResponseEntity.ok(
+                ApiResponseDTO.<Void>builder()
+                        .success(true)
+                        .message(
+                                "Password changed successfully")
+                        .build()
+        );
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<ApiResponseDTO<String>>
+    forgotPassword(
+
+            @RequestBody
+            ForgotPasswordRequestDTO request){
+
+        String token =
+                authService
+                        .forgotPassword(
+                                request);
+
+        return ResponseEntity.ok(
+                ApiResponseDTO.<String>builder()
+                        .success(true)
+                        .message(
+                                "Reset token generated")
+                        .data(token)
+                        .build()
+        );
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<ApiResponseDTO<Void>>
+    resetPassword(
+
+            @RequestBody
+            ResetPasswordRequestDTO request){
+
+        authService
+                .resetPassword(
+                        request);
+
+        return ResponseEntity.ok(
+                ApiResponseDTO.<Void>builder()
+                        .success(true)
+                        .message(
+                                "Password reset successfully")
                         .build()
         );
     }

@@ -138,4 +138,51 @@ public class GlobalExceptionHandler {
                         )
                 );
     }
+
+    @ExceptionHandler(
+            InvalidStateException.class)
+    public ResponseEntity<ErrorResponseDTO>
+    handleInvalidState(
+            InvalidStateException ex,
+            HttpServletRequest request){
+
+        return ResponseEntity
+                .badRequest()
+                .body(
+                        ErrorResponseDTO.builder()
+                                .timestamp(
+                                        LocalDateTime.now())
+                                .status(400)
+                                .error("Bad Request")
+                                .message(
+                                        ex.getMessage())
+                                .path(
+                                        request.getRequestURI())
+                                .build()
+                );
+    }
+
+    @ExceptionHandler(
+            CloudStorageException.class)
+    public ResponseEntity<ErrorResponseDTO>
+    handleCloudStorageException(
+            CloudStorageException ex,
+            HttpServletRequest request){
+
+        return ResponseEntity
+                .status(503)
+                .body(
+                        ErrorResponseDTO.builder()
+                                .timestamp(
+                                        LocalDateTime.now())
+                                .status(503)
+                                .error(
+                                        "Service Unavailable")
+                                .message(
+                                        ex.getMessage())
+                                .path(
+                                        request.getRequestURI())
+                                .build()
+                );
+    }
 }
