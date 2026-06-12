@@ -23,57 +23,36 @@ public class JwtUtil {
                 secretKey.getBytes());
     }
 
-    public String generateToken(
-            User user) {
+    public String generateToken(User user) {
 
         return Jwts.builder()
                 .subject(user.getEmail())
-                .claim(
-                        "role",
-                        user.getRole().name())
+                .claim("role", user.getRole().name())
                 .issuedAt(new Date())
-                .expiration(
-                        new Date(
-                                System.currentTimeMillis()
-                                        + accessExpiration))
+                .expiration(new Date(System.currentTimeMillis() + accessExpiration))
                 .signWith(getSigningKey())
                 .compact();
     }
 
-    public String extractEmail(
-            String token) {
-
-        return extractClaims(token)
-                .getSubject();
+    public String extractEmail(String token) {
+        return extractClaims(token).getSubject();
     }
 
-    public String extractRole(
-            String token) {
-
+    public String extractRole(String token) {
         return extractClaims(token)
-                .get(
-                        "role",
-                        String.class);
+                .get("role", String.class);
     }
 
-    public boolean validateToken(
-            String token) {
-
+    public boolean validateToken(String token) {
         try {
-
             extractClaims(token);
-
             return true;
-
         } catch (Exception e) {
-
             return false;
         }
     }
 
-    private Claims extractClaims(
-            String token) {
-
+    private Claims extractClaims(String token) {
         return Jwts.parser()
                 .verifyWith(getSigningKey())
                 .build()
@@ -81,10 +60,7 @@ public class JwtUtil {
                 .getPayload();
     }
 
-    public Date extractExpiration(
-            String token){
-
-        return extractClaims(token)
-                .getExpiration();
+    public Date extractExpiration(String token){
+        return extractClaims(token).getExpiration();
     }
 }

@@ -14,25 +14,19 @@ import spring_boot.it211projectfinal.model.dto.request.GradeRequestDTO;
 @Slf4j
 public class GradeLoggingAspect {
 
-    @AfterReturning(
-            value =
-                    "execution(* spring_boot.it211projectfinal.service.impl.SubmissionServiceImpl.gradeSubmission(..))")
+    @AfterReturning(value = "execution(* spring_boot.it211projectfinal.service.impl.SubmissionServiceImpl.gradeSubmission(..))")
     public void logGrade(
             JoinPoint joinPoint){
 
-        Object[] args =
-                joinPoint.getArgs();
+        Object[] args = joinPoint.getArgs();
 
-        GradeRequestDTO request =
-                (GradeRequestDTO) args[0];
+        GradeRequestDTO request = (GradeRequestDTO) args[0];
 
-        Authentication auth =
-                SecurityContextHolder
-                        .getContext()
-                        .getAuthentication();
+        Authentication auth = SecurityContextHolder
+                .getContext()
+                .getAuthentication();
 
-        String lecturerEmail =
-                auth.getName();
+        String lecturerEmail = auth.getName();
 
         log.info(
                 "[GRADE] Lecturer={} Submission={} Score={}",

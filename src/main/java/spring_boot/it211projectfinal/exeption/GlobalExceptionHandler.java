@@ -12,34 +12,26 @@ import java.time.LocalDateTime;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    @ExceptionHandler(
-            MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponseDTO>
-    handleValidation(
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponseDTO> handleValidation(
             MethodArgumentNotValidException ex,
-            HttpServletRequest request){
+            HttpServletRequest request
+    ){
 
-        String message =
-                ex.getBindingResult()
-                        .getFieldError()
-                        .getDefaultMessage();
+        String message = ex.getBindingResult()
+                .getFieldError()
+                .getDefaultMessage();
 
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(
-                        buildError(
-                                HttpStatus.BAD_REQUEST,
-                                message,
-                                request
-                        )
-                );
+                .body(buildError(HttpStatus.BAD_REQUEST, message, request));
     }
 
     private ErrorResponseDTO buildError(
             HttpStatus status,
             String message,
-            HttpServletRequest request){
-
+            HttpServletRequest request
+    ){
         return ErrorResponseDTO.builder()
                 .timestamp(LocalDateTime.now())
                 .status(status.value())
@@ -49,139 +41,87 @@ public class GlobalExceptionHandler {
                 .build();
     }
 
-    @ExceptionHandler(
-            ResourceNotFoundException.class)
-    public ResponseEntity<ErrorResponseDTO>
-    handleNotFound(
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ErrorResponseDTO> handleNotFound(
             ResourceNotFoundException ex,
-            HttpServletRequest request){
-
+            HttpServletRequest request
+    ){
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
-                .body(
-                        buildError(
-                                HttpStatus.NOT_FOUND,
-                                ex.getMessage(),
-                                request
-                        )
-                );
+                .body(buildError(HttpStatus.NOT_FOUND, ex.getMessage(), request));
     }
 
-    @ExceptionHandler(
-            BadRequestException.class)
-    public ResponseEntity<ErrorResponseDTO>
-    handleBadRequest(
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<ErrorResponseDTO> handleBadRequest(
             BadRequestException ex,
-            HttpServletRequest request){
-
+            HttpServletRequest request
+    ){
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(
-                        buildError(
-                                HttpStatus.BAD_REQUEST,
-                                ex.getMessage(),
-                                request
-                        )
-                );
+                .body(buildError(HttpStatus.BAD_REQUEST, ex.getMessage(), request));
     }
 
-    @ExceptionHandler(
-            UnauthorizedException.class)
-    public ResponseEntity<ErrorResponseDTO>
-    handleUnauthorized(
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<ErrorResponseDTO> handleUnauthorized(
             UnauthorizedException ex,
-            HttpServletRequest request){
-
+            HttpServletRequest request
+    ){
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
-                .body(
-                        buildError(
-                                HttpStatus.UNAUTHORIZED,
-                                ex.getMessage(),
-                                request
-                        )
-                );
+                .body(buildError(HttpStatus.UNAUTHORIZED, ex.getMessage(), request));
     }
 
-    @ExceptionHandler(
-            ForbiddenException.class)
-    public ResponseEntity<ErrorResponseDTO>
-    handleForbidden(
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<ErrorResponseDTO> handleForbidden(
             ForbiddenException ex,
-            HttpServletRequest request){
-
+            HttpServletRequest request
+    ){
         return ResponseEntity
                 .status(HttpStatus.FORBIDDEN)
-                .body(
-                        buildError(
-                                HttpStatus.FORBIDDEN,
-                                ex.getMessage(),
-                                request
-                        )
-                );
+                .body(buildError(HttpStatus.FORBIDDEN, ex.getMessage(), request));
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponseDTO>
-    handleException(
+    public ResponseEntity<ErrorResponseDTO> handleException(
             Exception ex,
-            HttpServletRequest request){
-
+            HttpServletRequest request
+    ){
         return ResponseEntity
-                .status(
-                        HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(
-                        buildError(
-                                HttpStatus.INTERNAL_SERVER_ERROR,
-                                ex.getMessage(),
-                                request
-                        )
-                );
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(buildError(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), request));
     }
 
-    @ExceptionHandler(
-            InvalidStateException.class)
-    public ResponseEntity<ErrorResponseDTO>
-    handleInvalidState(
+    @ExceptionHandler(InvalidStateException.class)
+    public ResponseEntity<ErrorResponseDTO> handleInvalidState(
             InvalidStateException ex,
-            HttpServletRequest request){
-
+            HttpServletRequest request
+    ){
         return ResponseEntity
                 .badRequest()
-                .body(
-                        ErrorResponseDTO.builder()
-                                .timestamp(
-                                        LocalDateTime.now())
-                                .status(400)
-                                .error("Bad Request")
-                                .message(
-                                        ex.getMessage())
-                                .path(
-                                        request.getRequestURI())
-                                .build()
+                .body(ErrorResponseDTO.builder()
+                        .timestamp(LocalDateTime.now())
+                        .status(400)
+                        .error("Bad Request")
+                        .message(ex.getMessage())
+                        .path(request.getRequestURI())
+                        .build()
                 );
     }
 
-    @ExceptionHandler(
-            CloudStorageException.class)
-    public ResponseEntity<ErrorResponseDTO>
-    handleCloudStorageException(
+    @ExceptionHandler(CloudStorageException.class)
+    public ResponseEntity<ErrorResponseDTO> handleCloudStorageException(
             CloudStorageException ex,
-            HttpServletRequest request){
-
+            HttpServletRequest request
+    ){
         return ResponseEntity
                 .status(503)
                 .body(
                         ErrorResponseDTO.builder()
-                                .timestamp(
-                                        LocalDateTime.now())
+                                .timestamp(LocalDateTime.now())
                                 .status(503)
-                                .error(
-                                        "Service Unavailable")
-                                .message(
-                                        ex.getMessage())
-                                .path(
-                                        request.getRequestURI())
+                                .error("Service Unavailable")
+                                .message(ex.getMessage())
+                                .path(request.getRequestURI())
                                 .build()
                 );
     }

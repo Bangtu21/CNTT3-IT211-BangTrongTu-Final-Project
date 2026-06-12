@@ -18,40 +18,31 @@ public class StudentSubmissionController {
     private final SubmissionService submissionService;
 
     @PostMapping
-    public ResponseEntity<ApiResponseDTO<SubmissionResponseDTO>>
-    submit(
-            @RequestBody SubmissionRequestDTO request){
-
+    public ResponseEntity<ApiResponseDTO<SubmissionResponseDTO>> submit(@RequestBody SubmissionRequestDTO request){
         return ResponseEntity.ok(
                 ApiResponseDTO.<SubmissionResponseDTO>builder()
                         .success(true)
                         .message("Submission created successfully")
-                        .data(
-                                submissionService.submit(
-                                        request))
+                        .data(submissionService.submit(request))
                         .build()
         );
     }
 
     @GetMapping("/my")
-    public ResponseEntity<ApiResponseDTO<List<SubmissionResponseDTO>>>
-    mySubmissions(){
+    public ResponseEntity<ApiResponseDTO<List<SubmissionResponseDTO>>> mySubmissions(){
 
         return ResponseEntity.ok(
                 ApiResponseDTO
-                        .<List<SubmissionResponseDTO>>
-                                builder()
+                        .<List<SubmissionResponseDTO>>builder()
                         .success(true)
                         .message("Get submissions successfully")
-                        .data(
-                                submissionService.mySubmissions())
+                        .data(submissionService.mySubmissions())
                         .build()
         );
     }
 
     @PostMapping("/upload")
-    public ResponseEntity<ApiResponseDTO<SubmissionResponseDTO>>
-    uploadReport(
+    public ResponseEntity<ApiResponseDTO<SubmissionResponseDTO>> uploadReport(
 
             @RequestParam Long submissionId,
 
@@ -62,11 +53,7 @@ public class StudentSubmissionController {
                         .<SubmissionResponseDTO>builder()
                         .success(true)
                         .message("Upload report successfully")
-                        .data(
-                                submissionService
-                                        .uploadReport(
-                                                submissionId,
-                                                file))
+                        .data(submissionService.uploadReport(submissionId, file))
                         .build()
         );
     }

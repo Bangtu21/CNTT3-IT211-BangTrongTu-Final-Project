@@ -15,12 +15,8 @@ public class StudentEnrollmentController {
     private final EnrollmentService enrollmentService;
 
     @PostMapping
-    public ResponseEntity<ApiResponseDTO<Void>>
-    registerCourse(
-            @RequestBody EnrollmentRequestDTO request){
-
+    public ResponseEntity<ApiResponseDTO<Void>> registerCourse(@RequestBody EnrollmentRequestDTO request){
         enrollmentService.registerCourse(request);
-
         return ResponseEntity.ok(
                 ApiResponseDTO.<Void>builder()
                         .success(true)

@@ -13,12 +13,9 @@ public interface AuthService {
 
     void logout(String token);
 
-    void changePassword(
-            ChangePasswordRequestDTO request);
+    void changePassword(ChangePasswordRequestDTO request);
 
-    String forgotPassword(
-            ForgotPasswordRequestDTO request);
+    String forgotPassword(ForgotPasswordRequestDTO request);
 
-    void resetPassword(
-            ResetPasswordRequestDTO request);
+    void resetPassword(ResetPasswordRequestDTO request);
 }

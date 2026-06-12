@@ -18,33 +18,24 @@ public class LecturerMaterialController {
     private final LectureMaterialService lectureMaterialService;
 
     @PostMapping
-    public ResponseEntity<ApiResponseDTO<LectureMaterialResponseDTO>>
-    create(
-            @RequestBody LectureMaterialRequestDTO request){
-
+    public ResponseEntity<ApiResponseDTO<LectureMaterialResponseDTO>> create(@RequestBody LectureMaterialRequestDTO request){
         return ResponseEntity.ok(
                 ApiResponseDTO.<LectureMaterialResponseDTO>builder()
                         .success(true)
                         .message("Material uploaded successfully")
-                        .data(
-                                lectureMaterialService.create(
-                                        request))
+                        .data(lectureMaterialService.create(request))
                         .build()
         );
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponseDTO<List<LectureMaterialResponseDTO>>>
-    getAll(){
-
+    public ResponseEntity<ApiResponseDTO<List<LectureMaterialResponseDTO>>> getAll(){
         return ResponseEntity.ok(
                 ApiResponseDTO
-                        .<List<LectureMaterialResponseDTO>>
-                                builder()
+                        .<List<LectureMaterialResponseDTO>>builder()
                         .success(true)
                         .message("Get materials successfully")
-                        .data(
-                                lectureMaterialService.getAll())
+                        .data(lectureMaterialService.getAll())
                         .build()
         );
     }

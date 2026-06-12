@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Builder
+@Data
 public class SubmissionResponseDTO {
     private Long id;
 

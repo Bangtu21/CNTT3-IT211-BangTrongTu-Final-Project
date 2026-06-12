@@ -23,46 +23,30 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     private final EnrollmentRepository enrollmentRepository;
 
     @Override
-    public void registerCourse(
-            EnrollmentRequestDTO request) {
+    public void registerCourse(EnrollmentRequestDTO request) {
 
-        Authentication authentication =
-                SecurityContextHolder
-                        .getContext()
-                        .getAuthentication();
+        Authentication authentication = SecurityContextHolder
+                .getContext()
+                .getAuthentication();
 
-        String email =
-                authentication.getName();
+        String email = authentication.getName();
 
-        User user =
-                userRepository.findByEmail(email)
-                        .orElseThrow(
-                                () -> new ResourceNotFoundException(
-                                        "User not found"));
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-        Course course =
-                courseRepository.findById(
-                                request.getCourseId())
-                        .orElseThrow(
-                                () -> new ResourceNotFoundException(
-                                        "Course not found"));
+        Course course = courseRepository.findById(request.getCourseId())
+                .orElseThrow(() -> new ResourceNotFoundException("Course not found"));
 
-        boolean exists =
-                enrollmentRepository
-                        .existsByStudentAndCourse(
-                                user,
-                                course);
+        boolean exists = enrollmentRepository.existsByStudentAndCourse(user, course);
 
         if (exists) {
-            throw new BadRequestException(
-                    "You have already registered for this course");
+            throw new BadRequestException("You have already registered for this course");
         }
 
-        Enrollment enrollment =
-                Enrollment.builder()
-                        .student(user)
-                        .course(course)
-                        .build();
+        Enrollment enrollment = Enrollment.builder()
+                .student(user)
+                .course(course)
+                .build();
 
         enrollmentRepository.save(enrollment);
     }

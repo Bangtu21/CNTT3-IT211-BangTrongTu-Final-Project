@@ -21,22 +21,16 @@ public class LectureMaterialServiceImpl implements LectureMaterialService {
     private final CourseRepository courseRepository;
 
     @Override
-    public LectureMaterialResponseDTO create(
-            LectureMaterialRequestDTO request) {
+    public LectureMaterialResponseDTO create(LectureMaterialRequestDTO request) {
 
-        Course course =
-                courseRepository.findById(
-                                request.getCourseId())
-                        .orElseThrow(
-                                () -> new ResourceNotFoundException(
-                                        "Course not found"));
+        Course course = courseRepository.findById(request.getCourseId())
+                        .orElseThrow(() -> new ResourceNotFoundException("Course not found"));
 
-        LectureMaterial material =
-                LectureMaterial.builder()
-                        .title(request.getTitle())
-                        .materialUrl(request.getMaterialUrl())
-                        .course(course)
-                        .build();
+        LectureMaterial material = LectureMaterial.builder()
+                .title(request.getTitle())
+                .materialUrl(request.getMaterialUrl())
+                .course(course)
+                .build();
 
         lectureMaterialRepository.save(material);
 
@@ -45,7 +39,6 @@ public class LectureMaterialServiceImpl implements LectureMaterialService {
 
     @Override
     public List<LectureMaterialResponseDTO> getAll() {
-
         return lectureMaterialRepository
                 .findAll()
                 .stream()
@@ -53,9 +46,7 @@ public class LectureMaterialServiceImpl implements LectureMaterialService {
                 .toList();
     }
 
-    private LectureMaterialResponseDTO mapToResponse(
-            LectureMaterial material) {
-
+    private LectureMaterialResponseDTO mapToResponse(LectureMaterial material) {
         return LectureMaterialResponseDTO
                 .builder()
                 .id(material.getId())

@@ -8,14 +8,11 @@ import spring_boot.it211projectfinal.model.dto.response.SubmissionResponseDTO;
 import java.util.List;
 
 public interface SubmissionService {
-    SubmissionResponseDTO submit(
-            SubmissionRequestDTO request);
+    SubmissionResponseDTO submit(SubmissionRequestDTO request);
 
     List<SubmissionResponseDTO> mySubmissions();
 
     void gradeSubmission(GradeRequestDTO request);
 
-    SubmissionResponseDTO uploadReport(
-            Long submissionId,
-            MultipartFile file);
+    SubmissionResponseDTO uploadReport(Long submissionId, MultipartFile file);
 }

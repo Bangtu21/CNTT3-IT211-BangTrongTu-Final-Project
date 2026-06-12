@@ -19,8 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
-    private final BlacklistedTokenRepository
-            blacklistedTokenRepository;
+    private final BlacklistedTokenRepository blacklistedTokenRepository;
 
     @Override
     protected void doFilterInternal(
@@ -29,71 +28,37 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             FilterChain filterChain)
             throws ServletException, IOException {
 
-        String authHeader =
-                request.getHeader("Authorization");
+        String authHeader = request.getHeader("Authorization");
 
-        if (authHeader == null
-                || !authHeader.startsWith("Bearer ")) {
-
-            filterChain.doFilter(
-                    request,
-                    response);
-
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            filterChain.doFilter(request, response);
             return;
         }
 
-        String token =
-                authHeader.substring(7);
+        String token = authHeader.substring(7);
 
-        if(blacklistedTokenRepository
-                .existsByToken(token)) {
-
-            filterChain.doFilter(
-                    request,
-                    response);
-
+        if(blacklistedTokenRepository.existsByToken(token)) {
+            filterChain.doFilter(request, response);
             return;
         }
 
         if (!jwtUtil.validateToken(token)) {
-
-            filterChain.doFilter(
-                    request,
-                    response);
-
+            filterChain.doFilter(request, response);
             return;
         }
 
-        String email =
-                jwtUtil.extractEmail(token);
+        String email = jwtUtil.extractEmail(token);
 
-        String role =
-                jwtUtil.extractRole(token);
+        String role = jwtUtil.extractRole(token);
 
-        List<SimpleGrantedAuthority>
-                authorities =
-                List.of(
-                        new SimpleGrantedAuthority(
-                                "ROLE_" + role
-                        )
-                );
+        List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_" + role));
 
-        UsernamePasswordAuthenticationToken
-                authentication =
-                new UsernamePasswordAuthenticationToken(
-                        email,
-                        null,
-                        authorities
-                );
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(email, null, authorities);
 
         SecurityContextHolder
                 .getContext()
-                .setAuthentication(
-                        authentication
-                );
+                .setAuthentication(authentication);
 
-        filterChain.doFilter(
-                request,
-                response);
+        filterChain.doFilter(request, response);
     }
 }

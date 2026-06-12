@@ -14,53 +14,37 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class RefreshTokenServiceImpl implements RefreshTokenService {
-    private final RefreshTokenRepository
-            refreshTokenRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     @Value("${jwt.refresh-expiration}")
     private long refreshExpiration;
 
     @Override
-    public String createRefreshToken(
-            User user) {
+    public String createRefreshToken(User user) {
 
         refreshTokenRepository.deleteByUser(user);
 
-        String token =
-                UUID.randomUUID().toString();
+        String token = UUID.randomUUID().toString();
 
-        RefreshToken refreshToken =
-                RefreshToken.builder()
-                        .token(token)
-                        .expiryDate(
-                                Instant.now()
-                                        .plusMillis(
-                                                refreshExpiration))
-                        .user(user)
-                        .build();
+        RefreshToken refreshToken = RefreshToken.builder()
+                .token(token)
+                .expiryDate(Instant.now().plusMillis(refreshExpiration))
+                .user(user)
+                .build();
 
-        refreshTokenRepository.save(
-                refreshToken);
+        refreshTokenRepository.save(refreshToken);
 
         return token;
     }
 
     @Override
-    public RefreshToken verifyToken(
-            String token) {
+    public RefreshToken verifyToken(String token) {
 
-        RefreshToken refreshToken =
-                refreshTokenRepository
-                        .findByToken(token)
-                        .orElseThrow(
-                                () -> new RuntimeException(
-                                        "Refresh token not found"));
+        RefreshToken refreshToken = refreshTokenRepository.findByToken(token)
+                .orElseThrow(() -> new RuntimeException("Refresh token not found"));
 
-        if(refreshToken.getExpiryDate()
-                .isBefore(Instant.now())) {
-
-            throw new RuntimeException(
-                    "Refresh token expired");
+        if(refreshToken.getExpiryDate().isBefore(Instant.now())) {
+            throw new RuntimeException("Refresh token expired");
         }
 
         return refreshToken;

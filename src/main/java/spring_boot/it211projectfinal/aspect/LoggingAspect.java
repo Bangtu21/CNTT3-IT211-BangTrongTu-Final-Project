@@ -22,19 +22,15 @@ public class LoggingAspect {
 
         long startTime = System.currentTimeMillis();
 
-        String methodName =
-                joinPoint.getSignature().toShortString();
+        String methodName = joinPoint.getSignature().toShortString();
 
         log.info("START: {}", methodName);
 
-        Object result =
-                joinPoint.proceed();
+        Object result = joinPoint.proceed();
 
-        long endTime =
-                System.currentTimeMillis();
+        long endTime = System.currentTimeMillis();
 
-        long executionTime =
-                endTime - startTime;
+        long executionTime = endTime - startTime;
 
         log.info(
                 "END: {} | Execution Time: {} ms",

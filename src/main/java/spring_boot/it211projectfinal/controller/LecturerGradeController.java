@@ -17,13 +17,8 @@ public class LecturerGradeController {
     private final SubmissionService submissionService;
 
     @PutMapping
-    public ResponseEntity<ApiResponseDTO<Void>>
-    gradeSubmission(
-            @RequestBody GradeRequestDTO request){
-
-        submissionService.gradeSubmission(
-                request);
-
+    public ResponseEntity<ApiResponseDTO<Void>> gradeSubmission(@RequestBody GradeRequestDTO request){
+        submissionService.gradeSubmission(request);
         return ResponseEntity.ok(
                 ApiResponseDTO.<Void>builder()
                         .success(true)

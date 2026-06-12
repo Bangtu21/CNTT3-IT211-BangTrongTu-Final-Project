@@ -35,70 +35,46 @@ public class SubmissionServiceImpl implements SubmissionService {
     private final CloudinaryService cloudinaryService;
 
     @Override
-    public SubmissionResponseDTO submit(
-            SubmissionRequestDTO request) {
+    public SubmissionResponseDTO submit(SubmissionRequestDTO request) {
 
-        String email =
-                SecurityContextHolder
-                        .getContext()
-                        .getAuthentication()
-                        .getName();
+        String email = SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getName();
 
-        User student =
-                userRepository.findByEmail(email)
-                        .orElseThrow(
-                                () -> new ResourceNotFoundException(
-                                        "Student not found"));
+        User student = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found"));
 
-        Course course =
-                courseRepository.findById(
-                                request.getCourseId())
-                        .orElseThrow(
-                                () -> new ResourceNotFoundException(
-                                        "Course not found"));
+        Course course = courseRepository.findById(request.getCourseId())
+                .orElseThrow(() -> new ResourceNotFoundException("Course not found"));
 
-        if(submissionRepository
-                .existsByStudentAndCourse(
-                        student,
-                        course)){
-
-            throw new BadRequestException(
-                    "You already submitted this course");
+        if(submissionRepository.existsByStudentAndCourse(student, course)){
+            throw new BadRequestException("You already submitted this course");
         }
 
-        Submission submission =
-                Submission.builder()
-                        .githubLink(
-                                request.getGithubLink())
-                        .student(student)
-                        .course(course)
-                        .status(
-                                SubmissionStatus.SUBMITTED)
-                        .submittedAt(
-                                LocalDateTime.now())
-                        .build();
+        Submission submission = Submission
+                .builder()
+                .githubLink(request.getGithubLink())
+                .student(student)
+                .course(course)
+                .status(SubmissionStatus.SUBMITTED)
+                .submittedAt(LocalDateTime.now())
+                .build();
 
-        submissionRepository.save(
-                submission);
+        submissionRepository.save(submission);
 
         return mapToResponse(submission);
     }
 
     @Override
-    public List<SubmissionResponseDTO>
-    mySubmissions() {
+    public List<SubmissionResponseDTO> mySubmissions() {
+        String email = SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getName();
 
-        String email =
-                SecurityContextHolder
-                        .getContext()
-                        .getAuthentication()
-                        .getName();
-
-        User student =
-                userRepository.findByEmail(email)
-                        .orElseThrow(
-                                () -> new ResourceNotFoundException(
-                                        "Student not found"));
+        User student = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found"));
 
         return submissionRepository
                 .findByStudent(student)
@@ -107,98 +83,59 @@ public class SubmissionServiceImpl implements SubmissionService {
                 .toList();
     }
 
-    private SubmissionResponseDTO
-    mapToResponse(
-            Submission submission){
+    private SubmissionResponseDTO mapToResponse(Submission submission){
 
         return SubmissionResponseDTO
                 .builder()
                 .id(submission.getId())
-                .githubLink(
-                        submission.getGithubLink())
-                .reportUrl(
-                        submission.getReportUrl())
-                .score(
-                        submission.getScore())
-                .feedback(
-                        submission.getFeedback())
-                .status(
-                        submission.getStatus())
-                .submittedAt(
-                        submission.getSubmittedAt())
-                .studentId(
-                        submission.getStudent().getId())
-                .courseId(
-                        submission.getCourse().getId())
+                .githubLink(submission.getGithubLink())
+                .reportUrl(submission.getReportUrl())
+                .score(submission.getScore())
+                .feedback(submission.getFeedback())
+                .status(submission.getStatus())
+                .submittedAt(submission.getSubmittedAt())
+                .studentId(submission.getStudent().getId())
+                .courseId(submission.getCourse().getId())
                 .build();
     }
 
     @Override
-    public void gradeSubmission(
-            GradeRequestDTO request) {
+    public void gradeSubmission(GradeRequestDTO request) {
+        Submission submission = submissionRepository.findById(request.getSubmissionId())
+                .orElseThrow(() -> new ResourceNotFoundException("Submission not found"));
 
-        Submission submission =
-                submissionRepository
-                        .findById(
-                                request.getSubmissionId())
-                        .orElseThrow(
-                                () -> new ResourceNotFoundException(
-                                        "Submission not found"));
-
-        if (submission.getStatus()
-                != SubmissionStatus.SUBMITTED) {
-
-            throw new InvalidStateException(
-                    "Submission is not in SUBMITTED state");
+        if (submission.getStatus() != SubmissionStatus.SUBMITTED) {
+            throw new InvalidStateException("Submission is not in SUBMITTED state");
         }
 
-        if (request.getScore() < 0
-                || request.getScore() > 100) {
-
-            throw new BadRequestException(
-                    "Score must be between 0 and 100");
+        if (request.getScore() < 0 || request.getScore() > 100) {
+            throw new BadRequestException("Score must be between 0 and 100");
         }
 
-        submission.setScore(
-                request.getScore());
+        submission.setScore(request.getScore());
 
-        submission.setFeedback(
-                request.getFeedback());
+        submission.setFeedback(request.getFeedback());
 
-        submission.setStatus(
-                SubmissionStatus.GRADED);
+        submission.setStatus(SubmissionStatus.GRADED);
 
-        submissionRepository.save(
-                submission);
+        submissionRepository.save(submission);
     }
 
     @Override
-    public SubmissionResponseDTO uploadReport(
-            Long submissionId,
-            MultipartFile file) {
+    public SubmissionResponseDTO uploadReport(Long submissionId, MultipartFile file) {
+        Submission submission = submissionRepository.findById(submissionId)
+                .orElseThrow(() -> new ResourceNotFoundException("Submission not found"));
 
-        Submission submission =
-                submissionRepository.findById(
-                                submissionId)
-                        .orElseThrow(
-                                () -> new ResourceNotFoundException(
-                                        "Submission not found"));
+        String fileName = file.getOriginalFilename();
 
-        String fileName =
-                file.getOriginalFilename();
-
-        if(fileName == null ||
-                (!fileName.endsWith(".pdf")
+        if(fileName == null || (!fileName.endsWith(".pdf")
                         && !fileName.endsWith(".doc")
-                        && !fileName.endsWith(".docx"))){
-
-            throw new BadRequestException(
-                    "Only PDF, DOC, DOCX allowed");
+                        && !fileName.endsWith(".docx"))
+        ){
+            throw new BadRequestException("Only PDF, DOC, DOCX allowed");
         }
 
-        String url =
-                cloudinaryService
-                        .uploadFile(file);
+        String url = cloudinaryService.uploadFile(file);
 
         submission.setReportUrl(url);
 

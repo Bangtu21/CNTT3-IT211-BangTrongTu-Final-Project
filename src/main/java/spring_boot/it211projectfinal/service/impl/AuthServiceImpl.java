@@ -59,32 +59,22 @@ public class AuthServiceImpl implements AuthService {
                 .build();
     }
     @Override
-    public AuthResponseDTO login(
-            LoginRequestDTO request) {
+    public AuthResponseDTO login(LoginRequestDTO request) {
 
-        User user =
-                userRepository.findByEmail(
-                                request.getEmail())
-                        .orElseThrow(
-                                () -> new RuntimeException(
-                                        "Email not found"));
+        User user = userRepository.findByEmail(request.getEmail())
+                        .orElseThrow(() -> new RuntimeException("Email not found"));
 
-        boolean matched =
-                passwordEncoder.matches(
-                        request.getPassword(),
-                        user.getPassword());
+        boolean matched = passwordEncoder.matches(
+                request.getPassword(),
+                user.getPassword());
 
         if (!matched) {
-            throw new RuntimeException(
-                    "Wrong password");
+            throw new RuntimeException("Wrong password");
         }
 
-        String accessToken =
-                jwtUtil.generateToken(user);
+        String accessToken = jwtUtil.generateToken(user);
 
-        String refreshToken =
-                refreshTokenService
-                        .createRefreshToken(user);
+        String refreshToken = refreshTokenService.createRefreshToken(user);
 
         return AuthResponseDTO.builder()
                 .accessToken(accessToken)
@@ -93,139 +83,86 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public AuthResponseDTO refreshToken(
-            RefreshTokenRequestDTO request) {
+    public AuthResponseDTO refreshToken(RefreshTokenRequestDTO request) {
+        RefreshToken refreshToken = refreshTokenService.verifyToken(request.getRefreshToken());
 
-        RefreshToken refreshToken =
-                refreshTokenService
-                        .verifyToken(
-                                request.getRefreshToken());
+        User user = refreshToken.getUser();
 
-        User user =
-                refreshToken.getUser();
-
-        String accessToken =
-                jwtUtil.generateToken(user);
+        String accessToken = jwtUtil.generateToken(user);
 
         return AuthResponseDTO.builder()
                 .accessToken(accessToken)
-                .refreshToken(
-                        refreshToken.getToken())
+                .refreshToken(refreshToken.getToken())
                 .build();
     }
 
     @Override
-    public void logout(
-            String token) {
+    public void logout(String token) {
+        BlacklistedToken blacklistedToken = BlacklistedToken.builder()
+                .token(token)
+                .expiryDate(
+                        jwtUtil
+                                .extractExpiration(token)
+                                .toInstant())
+                .build();
 
-        BlacklistedToken blacklistedToken =
-                BlacklistedToken.builder()
-                        .token(token)
-                        .expiryDate(
-                                jwtUtil
-                                        .extractExpiration(
-                                                token)
-                                        .toInstant())
-                        .build();
-
-        blacklistedTokenRepository
-                .save(blacklistedToken);
+        blacklistedTokenRepository.save(blacklistedToken);
     }
 
     @Override
-    public void changePassword(
-            ChangePasswordRequestDTO request) {
+    public void changePassword(ChangePasswordRequestDTO request) {
 
-        String email =
-                SecurityContextHolder
-                        .getContext()
-                        .getAuthentication()
-                        .getName();
+        String email = SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getName();
 
-        User user =
-                userRepository
-                        .findByEmail(email)
-                        .orElseThrow(
-                                () -> new ResourceNotFoundException(
-                                        "User not found"));
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-        if (!passwordEncoder.matches(
-                request.getOldPassword(),
-                user.getPassword())) {
-
-            throw new BadRequestException(
-                    "Old password incorrect");
+        if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
+            throw new BadRequestException("Old password incorrect");
         }
 
-        user.setPassword(
-                passwordEncoder.encode(
-                        request.getNewPassword()));
-
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
         userRepository.save(user);
     }
 
     @Override
-    public String forgotPassword(
-            ForgotPasswordRequestDTO request) {
+    public String forgotPassword(ForgotPasswordRequestDTO request) {
 
-        User user =
-                userRepository
-                        .findByEmail(
-                                request.getEmail())
-                        .orElseThrow(
-                                () -> new ResourceNotFoundException(
-                                        "Email not found"));
+        User user = userRepository.findByEmail(request.getEmail())
+                        .orElseThrow(() -> new ResourceNotFoundException("Email not found"));
 
-        String token =
-                UUID.randomUUID()
-                        .toString();
+        String token = UUID.randomUUID().toString();
 
-        PasswordResetToken resetToken =
-                PasswordResetToken.builder()
-                        .token(token)
-                        .user(user)
-                        .expiryDate(
-                                LocalDateTime.now()
-                                        .plusMinutes(30))
-                        .build();
+        PasswordResetToken resetToken = PasswordResetToken.builder()
+                .token(token)
+                .user(user)
+                .expiryDate(LocalDateTime.now().plusMinutes(30))
+                .build();
 
-        passwordResetTokenRepository
-                .save(resetToken);
+        passwordResetTokenRepository.save(resetToken);
 
         return token;
     }
 
     @Override
-    public void resetPassword(
-            ResetPasswordRequestDTO request) {
+    public void resetPassword(ResetPasswordRequestDTO request) {
 
-        PasswordResetToken tokenEntity =
-                passwordResetTokenRepository
-                        .findByToken(
-                                request.getToken())
-                        .orElseThrow(
-                                () -> new BadRequestException(
-                                        "Invalid token"));
+        PasswordResetToken tokenEntity = passwordResetTokenRepository.findByToken(request.getToken())
+                        .orElseThrow(() -> new BadRequestException("Invalid token"));
 
-        if(tokenEntity
-                .getExpiryDate()
-                .isBefore(
-                        LocalDateTime.now())){
-
-            throw new BadRequestException(
-                    "Token expired");
+        if(tokenEntity.getExpiryDate().isBefore(LocalDateTime.now())){
+            throw new BadRequestException("Token expired");
         }
 
-        User user =
-                tokenEntity.getUser();
+        User user = tokenEntity.getUser();
 
-        user.setPassword(
-                passwordEncoder.encode(
-                        request.getNewPassword()));
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
 
         userRepository.save(user);
 
-        passwordResetTokenRepository
-                .delete(tokenEntity);
+        passwordResetTokenRepository.delete(tokenEntity);
     }
 }

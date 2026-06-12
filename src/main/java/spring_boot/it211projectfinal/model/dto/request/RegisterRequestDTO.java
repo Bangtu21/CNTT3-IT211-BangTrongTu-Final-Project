@@ -3,9 +3,14 @@ package spring_boot.it211projectfinal.model.dto.request;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.Data;
+import lombok.*;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+@Builder
 public class RegisterRequestDTO {
     @NotBlank(message = "Tên đầy đủ không được để trống")
     private String fullName;

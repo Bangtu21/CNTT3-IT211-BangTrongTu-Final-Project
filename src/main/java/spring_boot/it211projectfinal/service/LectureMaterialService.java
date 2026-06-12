@@ -6,8 +6,7 @@ import spring_boot.it211projectfinal.model.dto.response.LectureMaterialResponseD
 import java.util.List;
 
 public interface LectureMaterialService {
-    LectureMaterialResponseDTO create(
-            LectureMaterialRequestDTO request);
+    LectureMaterialResponseDTO create(LectureMaterialRequestDTO request);
 
     List<LectureMaterialResponseDTO> getAll();
 }
