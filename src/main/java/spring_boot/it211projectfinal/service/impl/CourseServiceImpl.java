@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import spring_boot.it211projectfinal.exeption.ResourceNotFoundException;
 import spring_boot.it211projectfinal.model.dto.request.CourseRequestDTO;
 import spring_boot.it211projectfinal.model.dto.response.CourseResponseDTO;
 import spring_boot.it211projectfinal.model.entity.Course;
@@ -43,7 +44,7 @@ public class CourseServiceImpl implements CourseService {
     public CourseResponseDTO update(Long id, CourseRequestDTO request) {
 
         Course course = courseRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Course not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Course not found"));
 
         course.setCourseName(request.getCourseName());
         course.setDescription(request.getDescription());

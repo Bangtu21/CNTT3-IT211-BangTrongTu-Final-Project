@@ -6,6 +6,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import spring_boot.it211projectfinal.exeption.ResourceNotFoundException;
 import spring_boot.it211projectfinal.model.dto.request.UpdateUserRequestDTO;
 import spring_boot.it211projectfinal.model.dto.request.UserRequestDTO;
 import spring_boot.it211projectfinal.model.dto.response.UserResponseDTO;
@@ -49,7 +50,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDTO update(Long id, UpdateUserRequestDTO request) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         user.setFullName(request.getFullName());
         user.setEmail(request.getEmail());
@@ -64,7 +65,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void delete(Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         user.setActive(false);
         userRepository.save(user);

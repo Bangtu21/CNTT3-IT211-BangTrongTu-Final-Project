@@ -3,6 +3,7 @@ package spring_boot.it211projectfinal.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import spring_boot.it211projectfinal.exeption.BadRequestException;
 import spring_boot.it211projectfinal.model.entity.RefreshToken;
 import spring_boot.it211projectfinal.model.entity.User;
 import spring_boot.it211projectfinal.repository.RefreshTokenRepository;
@@ -41,10 +42,10 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     public RefreshToken verifyToken(String token) {
 
         RefreshToken refreshToken = refreshTokenRepository.findByToken(token)
-                .orElseThrow(() -> new RuntimeException("Refresh token not found"));
+                .orElseThrow(() -> new BadRequestException("Refresh token not found"));
 
         if(refreshToken.getExpiryDate().isBefore(Instant.now())) {
-            throw new RuntimeException("Refresh token expired");
+            throw new BadRequestException("Refresh token expired");
         }
 
         return refreshToken;

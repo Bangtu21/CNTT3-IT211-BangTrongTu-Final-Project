@@ -62,14 +62,14 @@ public class AuthServiceImpl implements AuthService {
     public AuthResponseDTO login(LoginRequestDTO request) {
 
         User user = userRepository.findByEmail(request.getEmail())
-                        .orElseThrow(() -> new RuntimeException("Email not found"));
+                        .orElseThrow(() -> new ResourceNotFoundException("Email not found"));
 
         boolean matched = passwordEncoder.matches(
                 request.getPassword(),
                 user.getPassword());
 
         if (!matched) {
-            throw new RuntimeException("Wrong password");
+            throw new BadRequestException("Wrong password");
         }
 
         String accessToken = jwtUtil.generateToken(user);
